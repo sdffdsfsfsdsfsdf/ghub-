@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title?</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #f5f5f5;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .separator {
+            font-size: 48px;
+            color: black;
+            margin-bottom: 40px;
+            font-weight: bold;
+        }
+        
+        .encrypted-word {
+            font-size: 64px;
+            font-weight: bold;
+            color: black;
+            margin: 20px 0;
+            letter-spacing: 4px;
+            word-break: break-word;
+            text-align: center;
+            min-height: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="separator">#<</div>
+        <div class="encrypted-word" id="encryptedWord">Загрузка...</div>
+    </div>
+
+    <script>
+        // БОЛЬШОЙ СПИСОК РЕАЛЬНЫХ АНГЛИЙСКИХ СЛОВ
+        const englishWords = [
+            "hello", "world", "apple", "house", "table", "chair", "phone", "water", "light", "music",
+            "book", "green", "black", "white", "smile", "dream", "peace", "happy", "cloud", "river",
+            "ocean", "forest", "mountain", "valley", "desert", "island", "planet", "galaxy", "universe",
+            "computer", "keyboard", "mouse", "screen", "monitor", "laptop", "tablet", "mobile", "internet",
+            "network", "software", "hardware", "program", "code", "data", "file", "folder", "device",
+            "cable", "battery", "charge", "power", "energy", "signal", "wireless", "digital", "analog",
+            "virtual", "reality", "augment", "artificial", "intelligence", "machine", "learning", "deep",
+            "neural", "network", "algorithm", "function", "variable", "constant", "parameter", "argument",
+            "array", "object", "class", "method", "property", "string", "integer", "boolean", "float",
+            "double", "character", "symbol", "operator", "expression", "statement", "declaration",
+            "assignment", "condition", "iteration", "recursion", "pointer", "reference", "memory",
+            "storage", "database", "query", "transaction", "commit", "rollback", "backup", "restore",
+            "security", "encryption", "decryption", "password", "authentication", "authorization",
+            "permission", "privilege", "access", "control", "firewall", "antivirus", "malware", "virus",
+            "trojan", "worm", "ransomware", "phishing", "hacking", "cracking", "exploit", "vulnerability",
+            "patch", "update", "upgrade", "version", "release", "stable", "beta", "alpha", "debug",
+            "test", "quality", "assurance", "validation", "verification", "documentation", "manual",
+            "guide", "tutorial", "example", "sample", "template", "framework", "library", "module",
+            "package", "dependency", "repository", "version", "control", "git", "github", "bitbucket",
+            "gitlab", "commit", "push", "pull", "merge", "branch", "fork", "clone", "remote", "origin",
+            "master", "develop", "feature", "hotfix", "release", "tag", "log", "history", "diff",
+            "conflict", "resolve", "stash", "reset", "revert", "checkout", "status", "add", "remove",
+            "ignore", "config", "init", "bare", "submodule", "workflow", "pipeline", "continuous",
+            "integration", "deployment", "delivery", "container", "docker", "kubernetes", "orchestration",
+            "microservice", "monolith", "architecture", "design", "pattern", "singleton", "factory",
+            "observer", "strategy", "adapter", "decorator", "facade", "proxy", "command", "iterator",
+            "mediator", "memento", "state", "template", "visitor", "solid", "single", "responsibility",
+            "open", "closed", "liskov", "substitution", "interface", "segregation", "dependency",
+            "inversion", "principle", "cohesion", "coupling", "abstraction", "encapsulation", "inheritance",
+            "polymorphism", "composition", "aggregation", "association", "dependency", "relationship",
+            "entity", "attribute", "relationship", "cardinality", "normalization", "denormalization",
+            "index", "primary", "foreign", "key", "constraint", "trigger", "procedure", "function",
+            "view", "materialized", "transaction", "isolation", "level", "read", "committed", "repeatable",
+            "serializable", "phantom", "dirty", "lost", "update", "deadlock", "timeout", "rollback",
+            "savepoint", "cursor", "temporary", "global", "local", "session", "connection", "pool",
+            "connection", "driver", "odbc", "jdbc", "adapter", "orm", "hibernate", "entity", "manager",
+            "persistence", "context", "session", "transaction", "flush", "clear", "detach", "merge",
+            "refresh", "lock", "optimistic", "pessimistic", "versioning", "audit", "logging", "trace",
+            "metric", "monitoring", "alert", "dashboard", "report", "analytics", "business", "intelligence",
+            "data", "warehouse", "lake", "mart", "mining", "cleaning", "transformation", "extraction",
+            "loading", "batch", "stream", "real", "time", "processing", "map", "reduce", "spark", "hadoop",
+            "hdfs", "yarn", "hive", "pig", "hbase", "cassandra", "mongodb", "redis", "memcached", "elastic",
+            "search", "logstash", "kibana", "beats", "stack", "cluster", "node", "shard", "replica",
+            "primary", "secondary", "arbiter", "election", "consensus", "raft", "paxos", "zookeeper",
+            "etcd", "consul", "service", "discovery", "registration", "health", "check", "load", "balancer",
+            "nginx", "haproxy", "traefik", "reverse", "proxy", "forward", "cache", "varnish", "squid",
+            "cdn", "cloudflare", "akamai", "aws", "amazon", "web", "services", "ec2", "s3", "lambda",
+            "dynamodb", "rds", "aurora", "redshift", "elasticache", "cloudfront", "route", "api", "gateway",
+            "cloudwatch", "cloudtrail", "iam", "role", "policy", "user", "group", "permission", "mfa",
+            "federation", "sso", "oauth", "openid", "connect", "jwt", "token", "refresh", "access", "secret",
+            "key", "credential", "certificate", "ssl", "tls", "https", "http", "web", "socket", "rest",
+            "graphql", "grpc", "soap", "xml", "json", "yaml", "toml", "csv", "tsv", "excel", "pdf", "word",
+            "powerpoint", "presentation", "slide", "document", "spreadsheet", "formula", "function", "macro",
+            "vba", "script", "javascript", "typescript", "python", "java", "csharp", "cpp", "cplusplus",
+            "ruby", "php", "go", "golang", "rust", "swift", "kotlin", "scala", "haskell", "erlang", "elixir",
+            "clojure", "lisp", "scheme", "racket", "ocaml", "fsharp", "dart", "flutter", "react", "native",
+            "angular", "vue", "svelte", "ember", "backbone", "jquery", "bootstrap", "tailwind", "foundation",
+            "material", "design", "component", "props", "state", "hook", "effect", "context", "reducer",
+            "action", "dispatch", "selector", "middleware", "thunk", "saga", "observable", "subject",
+            "behavior", "replay", "async", "await", "promise", "callback", "then", "catch", "finally",
+            "resolve", "reject", "race", "all", "settled", "any", "generator", "yield", "iterator", "symbol",
+            "proxy", "reflect", "weakmap", "weakset", "set", "map", "array", "buffer", "typed", "dataview",
+            "blob", "file", "reader", "writer", "stream", "readable", "writable", "duplex", "transform",
+            "pipeline", "compression", "zlib", "gzip", "deflate", "brotli", "crypto", "hash", "sha", "md",
+            "hmac", "cipher", "decipher", "sign", "verify", "random", "bytes", "timing", "safe", "compare",
+            "scrypt", "bcrypt", "argon", "pbkdf", "jwk", "jwe", "jws", "pem", "der", "asn", "x509", "pki",
+            "ca", "certificate", "authority", "root", "intermediate", "end", "entity", "revocation", "list",
+            "ocsp", "stapling", "pinning", "dane", "ct", "transparency", "log", "monitor", "auditor",
+            "subscriber", "precertificate", "final", "sct", "timestamp", "countersign", "archive", "armor",
+            "detached", "clearsign", "inline", "mime", "multipart", "boundary", "headers", "body", "chunked",
+            "encoding", "transfer", "content", "type", "length", "disposition", "range", "partial", "cache",
+            "control", "etag", "last", "modified", "expires", "age", "vary", "allow", "origin", "cors",
+            "cross", "resource", "sharing", "preflight", "simple", "credentialed", "opaque", "redirect",
+            "mode", "same", "strict", "lax", "none", "secure", "httponly", "samesite", "cookie", "session",
+            "local", "storage", "indexed", "db", "websql", "filesystem", "access", "quota", "estimate",
+            "persistent", "temporary", "sync", "worker", "service", "notification", "push", "subscription",
+            "vapid", "webpush", "manifest", "icon", "splash", "theme", "background", "foreground", "display",
+            "orientation", "viewport", "meta", "link", "script", "style", "import", "export", "module",
+            "nomodule", "defer", "async", "preload", "prefetch", "prerender", "dns", "preconnect", "stylesheet",
+            "font", "image", "media", "document", "worker", "embed", "object", "iframe", "frame", "frameset",
+            "noframes", "nested", "sandbox", "allow", "sameorigin", "scripts", "forms", "popups", "modals",
+            "top", "parent", "self", "blank", "target", "name", "title", "alt", "src", "href", "action",
+            "method", "get", "post", "put", "delete", "patch", "head", "options", "trace", "connect",
+            "upgrade", "websocket", "event", "source", "streaming", "long", "polling", "short", "ajax",
+            "fetch", "axios", "superagent", "request", "response", "header", "status", "code", "message",
+            "body", "text", "json", "form", "data", "url", "encoded", "multipart", "query", "string",
+            "parameter", "fragment", "hash", "search", "origin", "protocol", "host", "port", "pathname",
+            "location", "history", "navigate", "go", "back", "forward", "push", "replace", "state", "pop",
+            "event", "hashchange", "popstate", "beforeunload", "unload", "load", "dom", "content", "loaded",
+            "readystate", "change", "interactive", "complete", "deferred", "resolved", "rejected", "pending",
+            "fulfilled", "settled", "race", "all", "any", "aggregate", "error", "catch", "finally", "then",
+            "await", "async", "generator", "yield", "iterator", "next", "return", "throw", "done", "value",
+            "promise", "observable", "subscribe", "unsubscribe", "observer", "next", "error", "complete",
+            "subject", "behavior", "replay", "async", "scheduler", "queue", "animation", "frame", "asap",
+            "queue", "microtask", "macrotask", "event", "loop", "call", "stack", "heap", "memory", "garbage",
+            "collection", "mark", "sweep", "compact", "generational", "scavenge", "incremental", "concurrent",
+            "parallel", "worker", "thread", "process", "cluster", "fork", "spawn", "exec", "stdio", "stdin",
+            "stdout", "stderr", "pipe", "inherit", "ignore", "ipc", "message", "send", "receive", "close",
+            "disconnect", "exit", "kill", "signal", "sigterm", "sigkill", "sighup", "sigint", "sigpipe",
+            "sigusr", "alarm", "child", "parent", "pid", "ppid", "uid", "gid", "cwd", "chdir", "env",
+            "process", "argv", "argc", "executable", "path", "platform", "arch", "version", "versions",
+            "release", "features", "modules", "bindings", "addon", "native", "v8", "engine", "javascript",
+            "ecmascript", "es", "esnext", "stage", "proposal", "draft", "candidate", "final", "year",
+            "edition", "version", "es5", "es6", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020",
+            "es2021", "es2022", "tc39", "committee", "specification", "standard", "implementation", "polyfill",
+            "transpiler", "babel", "typescript", "flow", "annotation", "type", "interface", "generic",
+            "union", "intersection", "tuple", "enum", "any", "unknown", "never", "void", "null", "undefined",
+            "object", "string", "number", "boolean", "symbol", "bigint", "array", "function", "constructor",
+            "instance", "static", "public", "private", "protected", "readonly", "abstract", "extends",
+            "implements", "super", "this", "new", "delete", "typeof", "instanceof", "in", "void", "yield",
+            "await", "debugger", "export", "import", "from", "as", "default", "namespace", "require",
+            "module", "exports", "global", "window", "document", "navigator", "location", "history",
+            "screen", "console", "alert", "confirm", "prompt", "setTimeout", "setInterval", "clearTimeout",
+            "clearInterval", "requestAnimationFrame", "cancelAnimationFrame", "setImmediate", "clearImmediate",
+            "queueMicrotask", "performance", "now", "mark", "measure", "memory", "timing", "navigation",
+            "resource", "entry", "observer", "intersection", "mutation", "resize", "scroll", "focus",
+            "blur", "click", "dblclick", "mousedown", "mouseup", "mousemove", "mouseover", "mouseout",
+            "mouseenter", "mouseleave", "wheel", "keydown", "keyup", "keypress", "input", "change",
+            "submit", "reset", "select", "focusin", "focusout", "load", "unload", "abort", "error",
+            "resize", "scroll", "toggle", "contextmenu", "show", "copy", "cut", "paste", "beforecopy",
+            "beforecut", "beforepaste", "drag", "dragstart", "dragend", "dragover", "dragenter", "dragleave",
+            "drop", "touchstart", "touchend", "touchmove", "touchcancel", "pointerdown", "pointerup",
+            "pointermove", "pointerover", "pointerout", "pointerenter", "pointerleave", "pointercancel",
+            "gotpointercapture", "lostpointercapture", "gamepadconnected", "gamepaddisconnected",
+            "vrdisplayconnect", "vrdisplaydisconnect", "vrdisplaypresentchange", "animationstart",
+            "animationend", "animationiteration", "transitionstart", "transitionend", "transitionrun",
+            "transitioncancel", "fullscreenchange", "fullscreenerror", "webkitfullscreenchange",
+            "webkitfullscreenerror", "msfullscreenchange", "msfullscreenerror", "visibilitychange",
+            "pageshow", "pagehide", "popstate", "hashchange", "beforeunload", "unload", "online",
+            "offline", "message", "messageerror", "storage", "progress", "loadstart", "loadend",
+            "timeout", "abort", "error", "readystatechange", "open", "close", "upgradeneeded", "success",
+            "error", "blocked", "versionchange", "complete", "close", "open", "delete", "transaction",
+            "objectstore", "index", "cursor", "key", "value", "primary", "keypath", "auto", "increment",
+            "version", "name", "stores", "indexes", "keypath", "unique", "multi", "entry", "array",
+            "next", "prev", "continue", "advance", "update", "delete", "add", "put", "clear", "count",
+            "get", "getall", "getallkeys", "open", "cursor", "key", "range", "only", "lower", "upper",
+            "bound", "open", "closed", "direction", "next", "prev", "nextunique", "prevunique", "continue",
+            "advance", "update", "delete", "add", "put", "clear", "count", "get", "getall", "getallkeys",
+            "open", "cursor", "key", "range", "only", "lower", "upper", "bound", "open", "closed"
+        ];
+
+        // Преобразуем все слова в верхний регистр и убираем дубликаты
+        const words = [...new Set(englishWords.map(word => word.toUpperCase()))];
+        
+        // ШИФР ЦЕЗАРЯ
+        function caesarCipher(word) {
+            // Случайный сдвиг от 1 до 25
+            const shift = Math.floor(Math.random() * 25) + 1;
+            
+            return word.split('').map(char => {
+                if (char >= 'A' && char <= 'Z') {
+                    const code = char.charCodeAt(0);
+                    let shiftedCode = code + shift;
+                    // Если вышли за Z, возвращаемся к началу алфавита
+                    if (shiftedCode > 90) {
+                        shiftedCode = 65 + (shiftedCode - 91);
+                    }
+                    return String.fromCharCode(shiftedCode);
+                }
+                return char;
+            }).join('');
+        }
+        
+        // Получить случайное слово
+        function getRandomWord() {
+            const index = Math.floor(Math.random() * words.length);
+            return words[index];
+        }
+        
+        // Обновить слово на странице
+        function updateEncryptedWord() {
+            const word = getRandomWord();
+            const encrypted = caesarCipher(word);
+            
+            // Отображаем зашифрованное слово
+            document.getElementById('encryptedWord').textContent = encrypted;
+        }
+        
+        // Инициализация при загрузке
+        window.onload = function() {
+            updateEncryptedWord();
+            
+            // Обновляем при клике
+            document.addEventListener('click', updateEncryptedWord);
+            
+            // Автоматическое обновление каждые 10 секунд (опционально)
+            setInterval(updateEncryptedWord, 10000);
+        };
+    </script>
+</body>
+</html>
